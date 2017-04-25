@@ -10,10 +10,37 @@ import os
 from zython.logf.stringf import stringf
 from zython.logf.printf import printf
 import stat
+import re
 
 import pdb
 
 _LOG_DIR_DEFAULT = './output.log.ignore'
+
+def grep_string(s,pattern):
+    """
+    ref: [http://stackoverflow.com/questions/1921894/grep-and-python#answer-25181706]
+    s should be a string.
+    """
+    return '\n'.join(re.findall(r'^.*%s.*?$'%pattern,s,flags=re.M))
+def grep_file(f,pattern):
+    """
+    f should be a file name
+    """
+    with open(f) as in_f:
+        s = '\n'.join([l for l in in_f])
+        ret = grep_string(s,pattern)
+    return ret
+def grep_file_multi_keys(f,pattern_l):
+    """
+    grep multiple keys from the file named as f.
+    """
+    ret = dict()
+    with open(f) as in_f:
+        s = '\n'.join([l for l in in_f])
+        for pattern in pattern_l:
+            ret[pattern] = grep_string(s,pattern)
+    return ret
+    
 
 
 def mkdir_r(dir_r):
